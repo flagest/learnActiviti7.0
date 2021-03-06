@@ -20,6 +20,12 @@
         <mybatis-plus.version>3.4.0</mybatis-plus.version>
     </properties>
     <dependencies>
+        <!--加入Google的hashMap-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>24.0-jre</version>
+        </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>

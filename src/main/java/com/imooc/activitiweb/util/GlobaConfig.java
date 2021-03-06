@@ -23,5 +23,12 @@ public class GlobaConfig {
             this.desc = desc;
         }
 
+        public int getCode() {
+            return code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
     }
 }
