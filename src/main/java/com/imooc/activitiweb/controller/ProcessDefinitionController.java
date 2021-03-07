@@ -34,7 +34,7 @@ public class ProcessDefinitionController {
     private RepositoryService repositoryService;
 
     // 添加流程定义通过上传bpmn
-    @PostMapping
+    @PostMapping("/uploadStreamAndDeployment")
     public AjaxResponse uploadStreamAndDeployment(@RequestParam("multipartFile") MultipartFile multipartFile,
                                                   @RequestParam("deploymentName") String deploymentName) {
 
