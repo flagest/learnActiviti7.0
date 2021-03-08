@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imooc.activitiweb.mapper.FormDataMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        PROC_DEF_ID_,
+        PROC_INST_ID_,
+        FORM_KEY_,
+        Control_ID_,
+        Control_VALUE_
+    </sql>
+
+    <insert id="insertFormData" >
+        insert into form_data (PROC_DEF_ID_, PROC_INST_ID_, FORM_KEY_, Control_ID_,Control_VALUE_) values
+        <foreach item="item" collection="maps" index="index" separator=",">
+            (#{item.PROC_DEF_ID_}, #{item.PROC_INST_ID_}, #{item.FORM_KEY_}, #{item.Control_ID_}, #{item.Control_VALUE_})
+        </foreach>
+    </insert>
+
+</mapper>
