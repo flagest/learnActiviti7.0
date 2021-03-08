@@ -16,6 +16,12 @@ import java.util.List;
 @Component
 public interface FormDataMapper {
 
+    /**
+     * @param maps
+     * @return
+     */
     int insertFormData(@Param("maps") List<HashMap<String, Object>> maps);
+
+    List<HashMap<String, String>> selectFormData(@Param("PROC_INST_ID_") String PROC_INST_ID_);
 
 }

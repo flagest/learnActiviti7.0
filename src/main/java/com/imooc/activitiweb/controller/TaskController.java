@@ -117,6 +117,12 @@ public class TaskController {
     public AjaxResponse fromDataShow(@RequestParam("taskID") String taskID) {
         try {
             Task task = taskRuntime.task(taskID);
+            // 构建表单历史数据字典
+            HashMap<String, Object> controlerListMap = new HashMap<>();
+            List<HashMap<String, String>> hashMaps = formDataMapper.selectFormData(task.getProcessInstanceId());
+            for (HashMap<String, String> hashMap : hashMaps) {
+                controlerListMap.put(hashMap.get("Control_ID_").toString(), hashMap.get("Control_VALUE_").toString());
+            }
             UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
                     .getFlowElement(task.getFormKey());
             if (StringUtils.isEmpty(userTask)) {
@@ -132,8 +138,17 @@ public class TaskController {
                 hashMap.put("id", splitString[0]);
                 hashMap.put("contorlType", splitString[1]);
                 hashMap.put("controlLable", splitString[2]);
-                hashMap.put("controlDefvalue", splitString[3]);
-//                hashMap.put("controlParm", splitString[4]);
+//                hashMap.put("controlDefvalue", splitString[3]);
+                if (splitString[3].startsWith("FormProperty_")) {
+                    if (controlerListMap.containsKey(splitString[3])) {
+                        hashMap.put("controlDefvalue", controlerListMap.get(splitString[3]));
+                    } else {
+                        hashMap.put("controlDefvalue", "读取失败，检查" + splitString[0] + "配置");
+                    }
+                } else {
+                    hashMap.put("controlDefvalue", splitString[3]);
+                }
+                hashMap.put("controlParam", splitString[4]);
                 listMap.add(hashMap);
             }
 
@@ -168,7 +183,6 @@ public class TaskController {
                 hashMap.put("Control_ID_", stringSplit[0]);
                 hashMap.put("Control_VALUE_", stringSplit[1]);
                 listHashMaps.add(hashMap);
-
                 /*
                  完成任务
                  */
