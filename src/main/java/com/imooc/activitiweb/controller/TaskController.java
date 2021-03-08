@@ -2,7 +2,6 @@ package com.imooc.activitiweb.controller;
 
 
 import com.imooc.activitiweb.mapper.FormDataMapper;
-import com.imooc.activitiweb.pojo.FormData;
 import com.imooc.activitiweb.util.AjaxResponse;
 import com.imooc.activitiweb.util.GlobaConfig;
 import lombok.extern.slf4j.Slf4j;
