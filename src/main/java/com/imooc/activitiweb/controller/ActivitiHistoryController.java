@@ -111,10 +111,42 @@ public class ActivitiHistoryController {
                 }
             }
 
+            // 高亮联系ID
+            Set<String> hightLine = new HashSet<>();
+            keyList.forEach(s -> hightLine.add(map.get(s)));
+            // 获取已经完成的节点
+            List<HistoricActivityInstance> listFinshed = historyService.createHistoricActivityInstanceQuery()
+                    .processInstanceId(instanceID).finished().list();
+            // 已经完成的节点高亮
+            Set<String> highPoint = new HashSet<>();
+            listFinshed.forEach(s -> highPoint.add(s.getActivityId()));
+
+            // 获取待办节点
+            List<HistoricActivityInstance> listUnFinshed = historyService.createHistoricActivityInstanceQuery()
+                    .processInstanceId(instanceID).unfinished().list();
+            // 待办高连节点
+            Set<String> watingTODO = new HashSet<>();
+            listUnFinshed.forEach(item -> watingTODO.add(item.getActivityId()));
+
+            // 当前登录人姓名
+            String assigneeName = userInfoBean.getUsername();
+            List<HistoricTaskInstance> taskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                    .taskAssignee(assigneeName)
+                    .processInstanceId(instanceID)
+                    .finished()
+                    .list();
+            // 当前用户完成任务
+            Set<String> iDO = new HashSet<>();
+            taskInstanceList.forEach(item -> iDO.add(item.getTaskDefinitionKey()));
+            Map<String, Object> hashMap = new HashMap<>();
+            hashMap.put("hightLine",hightLine);
+            hashMap.put("highPoint",highPoint);
+            hashMap.put("watingTODO",watingTODO);
+            hashMap.put("iDO",iDO);
 
             return AjaxResponse.AjaxData(GlobaConfig.ResponseCode.SUCCESS.getCode(),
                     GlobaConfig.ResponseCode.SUCCESS.getDesc(),
-                    null);
+                    hashMap);
         } catch (Exception e) {
             e.printStackTrace();
             return AjaxResponse.AjaxData(GlobaConfig.ResponseCode.ERROR.getCode(),
