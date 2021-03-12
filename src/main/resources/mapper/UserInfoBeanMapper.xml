@@ -14,5 +14,9 @@
     <select id="selectByUsername" resultType="com.imooc.activitiweb.pojo.UserInfoBean">
      select * from user where username = #{username}
     </select>
+    <select id="selectUser" resultType="java.util.Map">
+        select username, name
+               from user
+    </select>
 
 </mapper>
