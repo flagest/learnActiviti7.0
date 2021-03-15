@@ -4,6 +4,7 @@ package com.imooc.activitiweb.controller;
 import com.google.common.collect.Maps;
 import com.imooc.activitiweb.util.AjaxResponse;
 import com.imooc.activitiweb.util.GlobaConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -13,19 +14,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
 /**
  * @author jzwu
  * @since 2021/3/3 0003
  */
+@Slf4j
 @RestController
 @RequestMapping("/processDefinition")
 public class ProcessDefinitionController {
@@ -68,18 +69,18 @@ public class ProcessDefinitionController {
 
     // 添加流程定义通过在线提交BPMN的XML
     @PostMapping("/addDeploymentByString")
-    public AjaxResponse addDeploymentByString(@RequestParam("multipartFile") String stringBPMN,
-                                              @RequestParam("deploymentName") String deploymentName) {
+    public AjaxResponse addDeploymentByString(@RequestParam("multipartFile") String stringBPMN
+            /*  @RequestParam("deploymentName") String deploymentName*/) {
 
         try {
             Deployment deploy = repositoryService.createDeployment()
                     .addString("CreateWithBPMJS.bpmn", stringBPMN)
-                    .name(deploymentName)
+                    .name("写死的字符串")
                     .deploy();
             return AjaxResponse.AjaxData(
                     GlobaConfig.ResponseCode.SUCCESS.getCode(),
                     GlobaConfig.ResponseCode.SUCCESS.getDesc(),
-                    deploy.getId() + ";" + deploymentName
+                    deploy.getId()
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,5 +183,32 @@ public class ProcessDefinitionController {
                     GlobaConfig.ResponseCode.ERROR.getDesc(),
                     e.toString());
         }
+    }
+
+    // 上传文件
+    @PostMapping("/upload")
+    public AjaxResponse upload(HttpServletRequest httpServletRequest,
+                               @RequestParam("multipartFile") MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            log.info("文件为空");
+        }
+        String originalFilename = multipartFile.getOriginalFilename();
+        String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String filePath = "E:/study/Internet_Java/imooc/Activiti7.0/code/learn/learnActivitiWeb/src/main/resources/resources/bpmn/";
+        // 文件新名称
+        String newFileName = UUID.randomUUID() + suffixName;
+        File file = new File(filePath + newFileName);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        try {
+            multipartFile.transferTo(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info(e.toString());
+        }
+        return AjaxResponse.AjaxData(GlobaConfig.ResponseCode.SUCCESS.getCode(),
+                GlobaConfig.ResponseCode.SUCCESS.getDesc(),
+                newFileName);
     }
 }

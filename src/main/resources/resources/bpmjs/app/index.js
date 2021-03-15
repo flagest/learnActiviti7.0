@@ -8,11 +8,11 @@ import customTranslate from '../resources/customTranslate/customTranslate';
 import customControlsModule from '../resources/customControls';
 
 import {
-  debounce
+    debounce
 } from 'min-dash';
 
 import diagramXML from '../resources/newDiagram.bpmn';
-
+import tools from "../resources/tools";
 
 var container = $('#js-drop-zone');
 
@@ -21,82 +21,82 @@ var canvas = $('#js-canvas');
 
 // 添加翻译组件
 var customTranslateModule = {
-  translate: ['value', customTranslate]
+    translate: ['value', customTranslate]
 };
 
 var bpmnModeler = new BpmnModeler({
-  container: canvas,
-  propertiesPanel: {
-    parent: '#js-properties-panel'
-  },
-  additionalModules: [
-    propertiesPanelModule,
-    propertiesProviderModule,
-    customControlsModule,
-    customTranslateModule
-  ],
-  moddleExtensions: {
-    activiti:activitiModdleDescriptor
-  }
+    container: canvas,
+    propertiesPanel: {
+        parent: '#js-properties-panel'
+    },
+    additionalModules: [
+        propertiesPanelModule,
+        propertiesProviderModule,
+        customControlsModule,
+        customTranslateModule
+    ],
+    moddleExtensions: {
+        activiti: activitiModdleDescriptor
+    }
 });
 container.removeClass('with-diagram');
 
 function createNewDiagram() {
-  openDiagram(diagramXML);
+    openDiagram(diagramXML);
 }
 
 async function openDiagram(xml) {
 
-  try {
+    try {
 
-    await bpmnModeler.importXML(xml);
+        await bpmnModeler.importXML(xml);
 
-    container
-      .removeClass('with-error')
-      .addClass('with-diagram');
-  } catch (err) {
+        container
+            .removeClass('with-error')
+            .addClass('with-diagram');
+    } catch (err) {
 
-    container
-      .removeClass('with-diagram')
-      .addClass('with-error');
+        container
+            .removeClass('with-diagram')
+            .addClass('with-error');
 
-    container.find('.error pre').text(err.message);
+        container.find('.error pre').text(err.message);
 
-    console.error(err);
-  }
+        console.error(err);
+    }
 }
 
 function registerFileDrop(container, callback) {
 
-  function handleFileSelect(e) {
-    e.stopPropagation();
-    e.preventDefault();
+    function handleFileSelect(e) {
+        e.stopPropagation();
+        e.preventDefault();
 
-    var files = e.dataTransfer.files;
+        var files = e.dataTransfer.files;
 
-    var file = files[0];
+        var file = files[0];
 
-    var reader = new FileReader();
+        var reader = new FileReader();
 
-    reader.onload = function(e) {
+        reader.onload = function (e) {
 
-      var xml = e.target.result;
+            var xml = e.target.result;
 
-      callback(xml);
-    };
+            callback(xml);
+        };
 
-    reader.readAsText(file);
-  }
+        reader.readAsText(file);
+    }
 
-  function handleDragOver(e) {
-    e.stopPropagation();
-    e.preventDefault();
+    function handleDragOver(e) {
+        e.stopPropagation();
+        e.preventDefault();
 
-    e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-  }
+        e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
 
-  container.get(0).addEventListener('dragover', handleDragOver, false);
-  container.get(0).addEventListener('drop', handleFileSelect, false);
+    container.get(0).addEventListener('dragover', handleDragOver, false);
+    container.get(0).addEventListener('drop', handleFileSelect, false);
 }
 
 
@@ -104,73 +104,87 @@ function registerFileDrop(container, callback) {
 
 // check file api availability
 if (!window.FileList || !window.FileReader) {
-  window.alert(
-    'Looks like you use an older browser that does not support drag and drop. ' +
-    'Try using Chrome, Firefox or the Internet Explorer > 10.');
+    window.alert(
+        'Looks like you use an older browser that does not support drag and drop. ' +
+        'Try using Chrome, Firefox or the Internet Explorer > 10.');
 } else {
-  registerFileDrop(container, openDiagram);
+    registerFileDrop(container, openDiagram);
 }
 
 // bootstrap diagram functions
 
-$(function() {
+$(function () {
 
-  $('#js-create-diagram').click(function(e) {
-    e.stopPropagation();
-    e.preventDefault();
+    $('#js-create-diagram').click(function (e) {
+        e.stopPropagation();
+        e.preventDefault();
 
-    createNewDiagram();
-  });
+        createNewDiagram();
+    });
 
-  var downloadLink = $('#js-download-diagram');
-  var downloadSvgLink = $('#js-download-svg');
+    var downloadLink = $('#js-download-diagram');
+    var downloadSvgLink = $('#js-download-svg');
 
-  $('.buttons a').click(function(e) {
-    if (!$(this).is('.active')) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
+    $('.buttons a').click(function (e) {
+        if (!$(this).is('.active')) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
 
-  function setEncoded(link, name, data) {
-    var encodedData = encodeURIComponent(data);
+    function setEncoded(link, name, data) {
+        var encodedData = encodeURIComponent(data);
 
-    if (data) {
-      link.addClass('active').attr({
-        'href': 'data:application/bpmn20-xml;charset=UTF-8,' + encodedData,
-        'download': name
-      });
-    } else {
-      link.removeClass('active');
-    }
-  }
-
-  var exportArtifacts = debounce(async function() {
-
-    try {
-
-      const { svg } = await bpmnModeler.saveSVG();
-
-      setEncoded(downloadSvgLink, 'diagram.svg', svg);
-    } catch (err) {
-
-      console.error('Error happened saving SVG: ', err);
-
-      setEncoded(downloadSvgLink, 'diagram.svg', null);
+        if (data) {
+            link.addClass('active').attr({
+                'href': 'data:application/bpmn20-xml;charset=UTF-8,' + encodedData,
+                'download': name
+            });
+        } else {
+            link.removeClass('active');
+        }
     }
 
-    try {
+    var exportArtifacts = debounce(async function () {
 
-      const { xml } = await bpmnModeler.saveXML({ format: true });
+        try {
 
-      setEncoded(downloadLink, 'diagram.bpmn', xml);
-    } catch (err) {
+            const {svg} = await bpmnModeler.saveSVG();
 
-      console.log('Error happened saving XML: ', err);
+            setEncoded(downloadSvgLink, 'diagram.svg', svg);
+        } catch (err) {
 
-      setEncoded(downloadLink, 'diagram.bpmn', null);
-    }
-  }, 500);
+            console.error('Error happened saving SVG: ', err);
 
-  bpmnModeler.on('commandStack.changed', exportArtifacts);
+            setEncoded(downloadSvgLink, 'diagram.svg', null);
+        }
+
+        try {
+
+            const {xml} = await bpmnModeler.saveXML({format: true});
+
+            setEncoded(downloadLink, 'diagram.bpmn', xml);
+        } catch (err) {
+
+            console.log('Error happened saving XML: ', err);
+
+            setEncoded(downloadLink, 'diagram.bpmn', null);
+        }
+    }, 500);
+
+    bpmnModeler.on('commandStack.changed', exportArtifacts);
+
+    // 下载BMPN
+    $('#downloadLoadBPMN').on('click', function () {
+        tools.download(bpmnModeler)
+    })
+
+    // 部署BMPN
+    $('#saveBPMN').on('click', function () {
+        tools.saveBPMN(bpmnModeler)
+    })
+    // 上传BMPN
+    $('#uploadFile').on('change', function () {
+        tools.uploadBPMN(bpmnModeler)
+    })
 });
