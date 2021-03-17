@@ -194,7 +194,9 @@ public class ProcessDefinitionController {
         }
         String originalFilename = multipartFile.getOriginalFilename();
         String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String filePath = "E:/study/Internet_Java/imooc/Activiti7.0/code/learn/learnActivitiWeb/src/main/resources/resources/bpmn/";
+        String filePath = GlobaConfig.BPMN_MAPPING;
+        filePath = filePath.replace("\\", "/");
+        filePath = filePath.replace("file:", "");
         // 文件新名称
         String newFileName = UUID.randomUUID() + suffixName;
         File file = new File(filePath + newFileName);

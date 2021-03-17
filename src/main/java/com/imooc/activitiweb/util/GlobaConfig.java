@@ -9,6 +9,11 @@ package com.imooc.activitiweb.util;
  */
 public class GlobaConfig {
     public static final Boolean test = true;
+    /* windows 环境下的地址 */
+    public static final String BPMN_MAPPING = "file:E:\\study\\Internet_Java\\imooc\\Activiti7.0\\code\\learn\\learnActivitiWeb\\src\\main\\resources\\resources\\bpmn\\";
+    /* Linux 环境下地址 */
+//    public static final String BPMN_MAPPING = "/root/activiti";
+
 
     public enum ResponseCode {
 

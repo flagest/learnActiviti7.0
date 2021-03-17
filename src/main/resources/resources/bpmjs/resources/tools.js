@@ -53,21 +53,33 @@ const tools = {
     uploadBPMN(bpmnModeler) {
         var FileUpload = document.myForm.uploadFile.files[0];
         var fm = new FormData();
-        fm.append('processFile', FileUpload);
-        $.ajax({
-            url: publicurl + 'processDefinition/addDeploymentByString',
-            type: 'POST',
-            datatype: 'json',
-            data: param,
-            success: function (result) {
-                if (result.status == '0') {
-                    alert('BPMN部署成功');
-                } else {
-                    alert(result.msg);
+        fm.append('multipartFile', FileUpload);
+            $.ajax({
+                url: publicurl + 'processDefinition/upload',
+                type: 'POST',
+                data: fm,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.status == '0') {
+                        var url = publicurl + 'bpmn/' + result.obj;
+                        tools.openBPMN_URL(bpmnModeler, url);
+                    } else {
+                        alert(result.msg);
+                    }
+                },
+                error: function (err) {
+                    alert(err)
                 }
-            },
-            error: function (err) {
-                alert(err)
+            })
+    },
+    openBPMN_URL(bpmnModeler, url) {
+        $.ajax(url, {dataType: 'text'}).done(async function (xml) {
+            try {
+                await bpmnModeler.importXML(xml)
+            } catch (error) {
+                consle.error(error)
             }
         })
     },

@@ -183,9 +183,7 @@ public class TaskController {
                 hashMap.put("Control_ID_", stringSplit[0]);
                 hashMap.put("Control_VALUE_", stringSplit[1]);
                 listHashMaps.add(hashMap);
-                /*
-                 完成任务
-                 */
+                /* 完成任务 */
                 this.isHasValues(taskID, values, hasValues, stringSplit);
             }
             formDataMapper.insertFormData(listHashMaps);
